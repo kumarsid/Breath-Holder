@@ -185,7 +185,7 @@ def main():
 
             # Display results in a card
             st.markdown(f"""
-<div class="card" style="background-color: {result['color']}; padding: 20px; border-radius: 10px; margin: 10px 0;">
+<div class="card" style="background-color: {result['color']}; padding: 10px; border-radius: 10px; margin: 10px 0;">
     <h3>{result['category']}</h3>
     <p>{result['description']}</p>
 </div>
