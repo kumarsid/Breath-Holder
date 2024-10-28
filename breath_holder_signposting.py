@@ -5,7 +5,7 @@ from datetime import datetime
 
 # Set page config
 st.set_page_config(
-    page_title="Breath Holding Capacity Signposting",
+    page_title="Breath Holding Capacity Survey",
     page_icon="🫁",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -30,13 +30,14 @@ st.markdown("""
         color: #1E88E5;
         font-size: 24px;
         font-weight: bold;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        text-align: left;
     }
     .subheader-style {
         color: #424242;
         font-size: 20px;
         font-weight: bold;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
     .card {
         padding: 20px;
@@ -54,84 +55,71 @@ st.markdown("""
         display: inline-block;
         margin-top: 10px;
     }
+    .logo {
+        display: inline-block;
+        margin-left: 10px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
+# Display logos on the top right
+st.markdown("""
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px;">
+        <img src="https://swlimo.southwestlondon.icb.nhs.uk/wp-content/uploads/2022/11/nhs-swlondon-logo.png" alt="Logo 1" width="200" class="logo">        
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown('<p class="header-style">😮‍💨 Breath Holding Capacity Survey</p>', unsafe_allow_html=True)
+
 def get_category_info(seconds):
-    """Return category information based on breath-holding time."""
     if seconds < 30:
         return {
-            'category': 'Category 1: Initial Assessment Required',
             'color': '#FF9999',
-            'description': 'Your breath-holding capacity suggests that further assessment might be beneficial.',
-            'recommendations': [
-                'Schedule a GP appointment for respiratory assessment',
-                'Start with very gentle breathing exercises',
-                'Monitor your daily breathing patterns'
-            ],
-            'nhs_links': [
-                ('NHS - Breathing Exercises for Stress', 'https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/'),
-                ('NHS - When to see a GP', 'https://www.nhs.uk/conditions/shortness-of-breath/'),
-                ('NHS - Breathing Difficulty', 'https://www.nhs.uk/conditions/breathing-difficulty/')
-            ]
+            'category': 'Category 1: Beginner',
+            'description': 'Your breath-holding capacity is at a beginner level. Consider practicing breathing exercises.',
+            'recommendations': ['Practice deep breathing daily', 'Consider meditation for relaxation'],
+            'nhs_links': [('NHS - When to see a GP', 'https://www.nhs.uk/conditions/shortness-of-breath/'),
+                ('NHS - Breathing Difficulty', 'https://www.nhs.uk/conditions/breathing-difficulty/')]
         }
-    elif 30 <= seconds <= 60:
+    elif 30 <= seconds < 60:
         return {
-            'category': 'Category 2: Developing Capacity',
-            'color': '#99FF99',
-            'description': 'You have a developing breath-holding capacity. Regular practice can help improve this.',
-            'recommendations': [
-                'Practice regular breathing exercises',
-                'Consider lifestyle factors that might affect breathing',
-                'Monitor progress weekly'
-            ],
-            'nhs_links': [
-                ('NHS - Physical Activity Guidelines', 'https://www.nhs.uk/live-well/exercise/'),
+            'color': '#FFCC99',
+            'category': 'Category 2: Intermediate',
+            'description': 'Your breath-holding capacity is at an intermediate level. Keep practicing to improve further.',
+            'recommendations': ['Try holding your breath while relaxed', 'Practice with controlled exhales'],
+            'nhs_links': [    ('NHS - Physical Activity Guidelines', 'https://www.nhs.uk/live-well/exercise/'),
                 ('NHS - Fitness Studio Exercise Videos', 'https://www.nhs.uk/conditions/nhs-fitness-studio/'),
-                ('NHS - Better Health', 'https://www.nhs.uk/better-health/')
-            ]
+                ('NHS - Better Health', 'https://www.nhs.uk/better-health/')]
         }
-    elif 61 <= seconds <= 150:
+    elif 60 <= seconds < 150:
         return {
+            'color': '#99FF99',
             'category': 'Category 3: Good Capacity',
-            'color': '#99CCFF',
-            'description': 'Your breath-holding capacity is good, showing effective breathing control.',
-            'recommendations': [
-                'Maintain current breathing practices',
-                'Consider incorporating advanced techniques',
-                'Focus on consistency in practice'
-            ],
-            'nhs_links': [
-                ('NHS - Fitness Tips', 'https://www.nhs.uk/live-well/exercise/fitness-tips/'),
-                ('NHS - Running Tips', 'https://www.nhs.uk/live-well/exercise/running-tips-for-beginners/'),
-                ('NHS - Health Benefits of Swimming', 'https://www.nhs.uk/live-well/exercise/swimming-for-fitness/')
-            ]
+            'description': 'Great job! Your breath-holding capacity is above average.',
+            'recommendations': ['Continue regular practice', 'Incorporate exercises for endurance'],
+            'nhs_links': [   ('NHS - Fitness Tips', 'https://www.nhs.uk/live-well/exercise/fitness-tips/'),
+                ('NHS - Health Benefits of Swimming', 'https://www.nhs.uk/live-well/exercise/swimming-for-fitness/')]
         }
     else:
         return {
+            'color': '#99CCFF',
             'category': 'Category 4: Advanced Capacity',
-            'color': '#FFCC99',
-            'description': 'You demonstrate advanced breath-holding capacity. Your level indicates excellent respiratory control.',
-            'recommendations': [
-                'Maintain this excellent level',
-                'Consider advanced breathing techniques',
-                'Share your expertise with others'
-            ],
-            'nhs_links': [
-                ('NHS - Exercise Health Benefits', 'https://www.nhs.uk/live-well/exercise/exercise-health-benefits/'),
+            'description': 'Excellent! You have advanced breath-holding capacity.',
+            'recommendations': ['Explore breath-hold diving techniques', 'Stay relaxed during breath holds'],
+            'nhs_links': [  ('NHS - Exercise Health Benefits', 'https://www.nhs.uk/live-well/exercise/exercise-health-benefits/'),
                 ('NHS - Get Active Your Way', 'https://www.nhs.uk/live-well/exercise/get-active-your-way/'),
-                ('NHS - Fitness Studio', 'https://www.nhs.uk/conditions/nhs-fitness-studio/')
-            ]
+                ('NHS - Fitness Studio', 'https://www.nhs.uk/conditions/nhs-fitness-studio/')]
         }
 
+
 def create_gauge_chart(value):
-    """Create a gauge chart showing breath-holding time."""
+    """Create a smaller gauge chart showing breath-holding time."""
     fig = go.Figure(go.Indicator(
-        mode = "gauge+number",
-        value = value,
-        domain = {'x': [0, 1], 'y': [0, 1]},
-        title = {'text': "Seconds", 'font': {'size': 24}},
-        gauge = {
+        mode="gauge+number",
+        value=value,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': "Seconds", 'font': {'size': 18}},
+        gauge={
             'axis': {'range': [None, 180], 'tickwidth': 1, 'tickcolor': "darkblue"},
             'bar': {'color': "#1E88E5"},
             'bgcolor': "white",
@@ -139,75 +127,86 @@ def create_gauge_chart(value):
             'bordercolor': "gray",
             'steps': [
                 {'range': [0, 30], 'color': "#FF9999"},
-                {'range': [30, 60], 'color': "#99FF99"},
-                {'range': [60, 150], 'color': "#99CCFF"},
-                {'range': [150, 180], 'color': "#FFCC99"}
+                {'range': [30, 60], 'color': "#FFCC99"},
+                {'range': [60, 150], 'color': "#99FF99"},
+                {'range': [150, 180], 'color': "#99CCFF"}
             ],
         }
     ))
     fig.update_layout(
-        height=300,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=200,  # Reduced height for smaller chart size
+        margin=dict(l=10, r=10, t=50, b=10),
         paper_bgcolor="white",
         font={'color': "darkblue", 'family': "Arial"}
     )
     return fig
 
 def main():
+    st.write("---")  # Adding a separator for visual clarity
+
     # Create two main columns for the layout
     left_col, right_col = st.columns([1, 1])
-    
+
     with left_col:
-        st.markdown('<p class="header-style">😮‍💨 Breath Holding Capacity Signposting</p>', unsafe_allow_html=True)
-        
-        with st.expander("📋 Instructions"):
-            st.markdown("""
-            1. Find a comfortable seated position
-            2. Take a few normal breaths to relax
-            3. Take a deep breath and hold it
-            4. Start the timer when you begin holding
-            5. Stop when you need to breathe
+        st.markdown('<p class="subheader-style">Welcome to the Survey!</p>', unsafe_allow_html=True)
+        st.write("""
+        Measure your breath-holding capacity, understand your current level, and get personalized recommendations 
+        along with relevant NHS resources.
+        """)
+
+        with st.expander("📋 Instructions", expanded=False):
+            st.write("""
+            1. Find a comfortable seated position.
+            2. Take a few normal breaths to relax.
+            3. Take a deep breath and hold it.
+            4. Start the timer when you begin holding.
+            5. Stop when you need to breathe.
             """)
-        
+
+       
+        # Input for breath-holding time
+        st.markdown("**Enter your breath-holding time (in seconds):**")  # Main input prompt
         seconds = st.number_input(
-            "Enter your breath-holding time (in seconds)",
+            "",  # Leave this empty for the input box
             min_value=0,
             max_value=300,
-            value=0,
-            help="Input the number of seconds you were able to hold your breath"
+            value=0
         )
+        st.markdown("Press Enter once done")  # Instruction below the input
+
 
     with right_col:
         if seconds > 0:
             # Get category information
             result = get_category_info(seconds)
-            
-            # Display gauge chart
+
+            # Display smaller gauge chart
             st.plotly_chart(create_gauge_chart(seconds), use_container_width=True)
-            
-            # Balloon celebration if in top 2 categories
-            if result['category'] in ['Category 3: Good Capacity', 'Category 4: Advanced Capacity']:
-                st.balloons()
-            
+
             # Display results in a card
             st.markdown(f"""
-            <div class="card" style="background-color: {result['color']}20;">
-                <h3>{result['category']}</h3>
-                <p>{result['description']}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
+<div class="card" style="background-color: {result['color']}; padding: 20px; border-radius: 10px; margin: 10px 0;">
+    <h3>{result['category']}</h3>
+    <p>{result['description']}</p>
+</div>
+""", unsafe_allow_html=True)
+
+
             # Display recommendations
             st.markdown('<p class="subheader-style">Recommendations</p>', unsafe_allow_html=True)
             for rec in result['recommendations']:
-                st.markdown(f"• {rec}")
-            
+                st.write(f"- {rec}")
+
             # Display NHS Links
             st.markdown('<p class="subheader-style">Relevant NHS Resources</p>', unsafe_allow_html=True)
-            for title, link in result['nhs_links']:
-                st.markdown(f'<a href="{link}" target="_blank" class="nhs-link">🔗 {title}</a>', unsafe_allow_html=True)
-            
 
+            # Create a string to hold the HTML for the links
+            links_html = ' | '.join([f'<a href="{link}" target="_blank" class="nhs-link">🔗 {title}</a>' for title, link in result['nhs_links']])
+            st.markdown(links_html, unsafe_allow_html=True)
+
+            # Show balloons for top categories
+            if result['category'] in ['Category 3: Good Capacity', 'Category 4: Advanced Capacity']:
+                st.balloons()
 
 if __name__ == "__main__":
     main()
